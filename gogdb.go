@@ -46,7 +46,7 @@ func pdbgExcluded(dbg string) bool {
 	return false
 }
 
-func pdbg(format string, args ...interface{}) string {
+func Pdbg(format string, args ...interface{}) string {
 	msg := fmt.Sprintf(format+"\n", args...)
 	msg = strings.TrimSpace(msg)
 	bstack := bytes.NewBuffer(debug.Stack())
