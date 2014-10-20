@@ -13,6 +13,21 @@ import (
 var rxDbgLine, _ = regexp.Compile(`^.*[Vv]on[Cc](?:/prog/git)?/senvgo/main.go:(\d+)\s`)
 var rxDbgFnct, _ = regexp.Compile(`^\s+(?:com/VonC/senvgo)?(?:\.\(([^\)]+)\))?\.?([^:]+)`)
 
+// http://stackoverflow.com/a/23554672/6309 https://vividcortex.com/blog/2013/12/03/go-idiom-package-and-object/
+// you design a type with methods as usual, and then you also place matching functions at the package level itself.
+// These functions simply delegate to a default instance of the type that’s a private package-level variable, created in an init() function.
+
+// Pdbg allows to print debug message with indent and function name added
+type Pdbg struct {
+}
+
+// global pdbg used for printing
+var pdbg *Pdbg = &Pdbg{}
+
+// Option set an option for a Pdbg
+// http://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis
+type Option func(*Pdbg) error
+
 func pdbgInc(scanner *bufio.Scanner, line string) string {
 	m := rxDbgLine.FindSubmatchIndex([]byte(line))
 	if len(m) == 0 {
@@ -46,7 +61,8 @@ func pdbgExcluded(dbg string) bool {
 	return false
 }
 
-func Pdbg(format string, args ...interface{}) string {
+// Pdbgf uses global Pdbg variable for printing strings, with indent and function name
+func Pdbgf(format string, args ...interface{}) string {
 	msg := fmt.Sprintf(format+"\n", args...)
 	msg = strings.TrimSpace(msg)
 	bstack := bytes.NewBuffer(debug.Stack())
