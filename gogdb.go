@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"regexp"
 	"runtime/debug"
@@ -19,6 +20,38 @@ var rxDbgFnct, _ = regexp.Compile(`^\s+(?:com/VonC/senvgo)?(?:\.\(([^\)]+)\))?\.
 
 // Pdbg allows to print debug message with indent and function name added
 type Pdbg struct {
+	sout *bufio.Writer
+	serr *bufio.Writer
+}
+
+// Out returns a writer for normal messages.
+// By default, os.StdOut
+func Out() io.Writer {
+	return pdbg.Out()
+}
+
+// Out returns a writer for normal messages for a given pdbg instance.
+// By default, os.StdOut
+func (pdbg *Pdbg) Out() io.Writer {
+	if pdbg.sout == nil {
+		return os.Stdout
+	}
+	return pdbg.sout
+}
+
+// Err returns a writer for error messages.
+// By default, os.StdErr
+func Err() io.Writer {
+	return pdbg.Err()
+}
+
+// Err returns a writer for error messages for a given pdbg instance.
+// By default, os.StdErr
+func (pdbg *Pdbg) Err() io.Writer {
+	if pdbg.serr == nil {
+		return os.Stderr
+	}
+	return pdbg.serr
 }
 
 // global pdbg used for printing
