@@ -20,6 +20,8 @@ var rxDbgFnct, _ = regexp.Compile(`^\s+(?:com/VonC/senvgo)?(?:\.\(([^\)]+)\))?\.
 
 // Pdbg allows to print debug message with indent and function name added
 type Pdbg struct {
+	bout *bytes.Buffer
+	berr *bytes.Buffer
 	sout *bufio.Writer
 	serr *bufio.Writer
 }
