@@ -72,6 +72,15 @@ func SetBuffers(apdbg *Pdbg) {
 	apdbg.serr = bufio.NewWriter(apdbg.berr)
 }
 
+// NewPdbg creates a PDbg instance, with options
+func NewPdbg(options ...Option) *Pdbg {
+	newpdbg := &Pdbg{}
+	for _, option := range options {
+		option(newpdbg)
+	}
+	return newpdbg
+}
+
 
 func pdbgInc(scanner *bufio.Scanner, line string) string {
 	m := rxDbgLine.FindSubmatchIndex([]byte(line))
