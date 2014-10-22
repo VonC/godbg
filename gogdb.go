@@ -81,6 +81,23 @@ func NewPdbg(options ...Option) *Pdbg {
 	return newpdbg
 }
 
+// ResetIOs reset the out and err buffer
+// (unless they were the default stdout and stderr,
+// in which case it does nothing)
+func (pdbg *Pdbg) ResetIOs() {
+	if pdbg.sout != nil {
+		pdbg.bout = bytes.NewBuffer(nil)
+		pdbg.sout.Reset(pdbg.bout)
+		pdbg.berr = bytes.NewBuffer(nil)
+		pdbg.serr.Reset(pdbg.berr)
+	}
+}
+
+// FlushIOs flushes the sout and serr bufio.Writer
+func (pdbg *Pdbg) FlushIOs() {
+	pdbg.sout.Flush()
+	pdbg.serr.Flush()
+}
 
 func pdbgInc(scanner *bufio.Scanner, line string) string {
 	m := rxDbgLine.FindSubmatchIndex([]byte(line))
