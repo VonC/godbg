@@ -61,7 +61,8 @@ var pdbg = &Pdbg{}
 
 // Option set an option for a Pdbg
 // http://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis
-type Option func(*Pdbg) error
+type Option func(*Pdbg)
+
 
 func pdbgInc(scanner *bufio.Scanner, line string) string {
 	m := rxDbgLine.FindSubmatchIndex([]byte(line))
