@@ -63,6 +63,15 @@ var pdbg = &Pdbg{}
 // http://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis
 type Option func(*Pdbg)
 
+// SetBuffers is an option for replacing stdout and stderr by
+// bytes buffers (in a bufio.Writer)
+func SetBuffers(apdbg *Pdbg) {
+	apdbg.bout = bytes.NewBuffer(nil)
+	apdbg.sout = bufio.NewWriter(apdbg.bout)
+	apdbg.berr = bytes.NewBuffer(nil)
+	apdbg.serr = bufio.NewWriter(apdbg.berr)
+}
+
 
 func pdbgInc(scanner *bufio.Scanner, line string) string {
 	m := rxDbgLine.FindSubmatchIndex([]byte(line))
