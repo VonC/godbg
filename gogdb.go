@@ -64,8 +64,12 @@ var pdbg = &Pdbg{}
 type Option func(*Pdbg)
 
 // SetBuffers is an option for replacing stdout and stderr by
-// bytes buffers (in a bufio.Writer)
+// bytes buffers (in a bufio.Writer).
+// If apdbg is nil, set for the global pdbg instance
 func SetBuffers(apdbg *Pdbg) {
+	if apdbg == nil {
+		apdbg = pdbg
+	}
 	apdbg.bout = bytes.NewBuffer(nil)
 	apdbg.sout = bufio.NewWriter(apdbg.bout)
 	apdbg.berr = bytes.NewBuffer(nil)

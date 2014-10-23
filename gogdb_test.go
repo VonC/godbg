@@ -13,5 +13,10 @@ func TestProject(t *testing.T) {
 			So(Out(), ShouldEqual, os.Stdout)
 			So(Err(), ShouldEqual, os.Stderr)
 		})
+		Convey("When set to buffer, no longer equals to std", func() {
+			SetBuffers(nil)
+			So(Out(), ShouldNotEqual, os.Stdout)
+			So(Err(), ShouldNotEqual, os.Stderr)
+		})
 	})
 }
