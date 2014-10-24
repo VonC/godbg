@@ -97,6 +97,42 @@ func (pdbg *Pdbg) ResetIOs() {
 	}
 }
 
+// OutString returns the string for out messages for the global pdbg instance.
+// It flushes the out buffer.
+// If out is set to os.Stdout, returns an empty string
+func OutString() string {
+	return pdbg.OutString()
+}
+
+// OutString returns the string for out messages for a given pdbg instance.
+// It flushes the out buffer.
+// If out is set to os.Stdout, returns an empty string
+func (pdbg *Pdbg) OutString() string {
+	if pdbg.sout == nil {
+		return ""
+	}
+	pdbg.sout.Flush()
+	return pdbg.bout.String()
+}
+
+// ErrString returns the string for error messages for the global pdbg instance.
+// It flushes the err buffer.
+// If err is set to os.StdErr, returns an empty string
+func ErrString() string {
+	return pdbg.ErrString()
+}
+
+// ErrString returns the string for error messages for a given pdbg instance.
+// It flushes the err buffer.
+// If err is set to os.StdErr, returns an empty string
+func (pdbg *Pdbg) ErrString() string {
+	if pdbg.serr == nil {
+		return ""
+	}
+	pdbg.serr.Flush()
+	return pdbg.berr.String()
+}
+
 func pdbgInc(scanner *bufio.Scanner, line string) string {
 	m := rxDbgLine.FindSubmatchIndex([]byte(line))
 	if len(m) == 0 {
