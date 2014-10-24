@@ -97,12 +97,6 @@ func (pdbg *Pdbg) ResetIOs() {
 	}
 }
 
-// FlushIOs flushes the sout and serr bufio.Writer
-func (pdbg *Pdbg) FlushIOs() {
-	pdbg.sout.Flush()
-	pdbg.serr.Flush()
-}
-
 func pdbgInc(scanner *bufio.Scanner, line string) string {
 	m := rxDbgLine.FindSubmatchIndex([]byte(line))
 	if len(m) == 0 {
