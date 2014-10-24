@@ -30,6 +30,14 @@ func TestProject(t *testing.T) {
 			So(apdbg.Err(), ShouldNotEqual, os.Stderr)
 		})
 		Convey("Test custom buffer on global pdbg", func() {
+			pdbg.bout = nil
+			pdbg.sout = nil
+			pdbg.berr = nil
+			pdbg.serr = nil
+			fmt.Fprintln(Out(), "test0 content0")
+			So(OutString(), ShouldEqual, ``)
+			fmt.Fprintln(Err(), "err0 content0")
+			So(ErrString(), ShouldEqual, ``)
 			SetBuffers(nil)
 			fmt.Fprintln(Out(), "test content")
 			fmt.Fprintln(Err(), "err1 cerr")
