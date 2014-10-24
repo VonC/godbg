@@ -1,6 +1,7 @@
 package godbg
 
 import (
+	"fmt"
 	"os"
 	"testing"
 	. "github.com/smartystreets/goconvey/convey"
@@ -27,6 +28,18 @@ func TestProject(t *testing.T) {
 			apdbg := NewPdbg(SetBuffers)
 			So(apdbg.Out(), ShouldNotEqual, os.Stdout)
 			So(apdbg.Err(), ShouldNotEqual, os.Stderr)
+		})
+		Convey("Test custom buffer on global pdbg", func() {
+			SetBuffers(nil)
+			fmt.Fprintln(Out(), "test content")
+			fmt.Fprintln(Err(), "err1 cerr")
+			fmt.Fprintln(Err(), "err2 cerr2")
+			fmt.Fprint(Out(), "test2 content2")
+			So(OutString(), ShouldEqual, `test content
+test2 content2`)
+			So(ErrString(), ShouldEqual, `err1 cerr
+err2 cerr2
+`)
 		})
 	})
 }
