@@ -49,5 +49,17 @@ test2 content2`)
 err2 cerr2
 `)
 		})
+		Convey("Test custom buffer on custom pdbg", func() {
+			apdbg := NewPdbg(SetBuffers)
+			fmt.Fprintln(apdbg.Out(), "test content")
+			fmt.Fprintln(apdbg.Err(), "err1 cerr")
+			fmt.Fprintln(apdbg.Err(), "err2 cerr2")
+			fmt.Fprint(apdbg.Out(), "test2 content2")
+			So(apdbg.OutString(), ShouldEqual, `test content
+test2 content2`)
+			So(apdbg.ErrString(), ShouldEqual, `err1 cerr
+err2 cerr2
+`)
+		})
 	})
 }
