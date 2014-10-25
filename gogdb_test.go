@@ -65,9 +65,13 @@ err2 cerr2
 			apdbg := NewPdbg(SetBuffers)
 			fmt.Fprint(apdbg.Out(), "test content")
 			So(apdbg.OutString(), ShouldEqual, `test content`)
+			fmt.Fprint(apdbg.Err(), "err1 cerr")
+			So(apdbg.ErrString(), ShouldEqual, `err1 cerr`)
 			apdbg.ResetIOs()
 			fmt.Fprint(apdbg.Out(), "test2 content2")
 			So(apdbg.OutString(), ShouldEqual, `test2 content2`)
+			fmt.Fprint(apdbg.Err(), "err2 cerr2")
+			So(apdbg.ErrString(), ShouldEqual, `err2 cerr2`)
 		})
 	})
 }
