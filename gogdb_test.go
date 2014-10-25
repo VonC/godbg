@@ -61,5 +61,13 @@ test2 content2`)
 err2 cerr2
 `)
 		})
+		Convey("Test custom buffer reset on custom pdbg", func() {
+			apdbg := NewPdbg(SetBuffers)
+			fmt.Fprint(apdbg.Out(), "test content")
+			So(apdbg.OutString(), ShouldEqual, `test content`)
+			apdbg.ResetIOs()
+			fmt.Fprint(apdbg.Out(), "test2 content2")
+			So(apdbg.OutString(), ShouldEqual, `test2 content2`)
+		})
 	})
 }
