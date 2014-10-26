@@ -74,4 +74,7 @@ err2 cerr2
 			So(apdbg.ErrString(), ShouldEqual, `err2 cerr2`)
 		})
 	})
+
+	Convey("Test pdbg print functions", t, func() {
+		})
 }
