@@ -93,9 +93,18 @@ err2 cerr2
 		Convey("Test pdbg print with global instance", func() {
 			SetBuffers(nil)
 			Pdbgf("test")
+			So(ErrString(), ShouldEqual, `[func.009:95]
+  test
+`)
+			ResetIOs()
+			prbgtest()
 			So(ErrString(), ShouldEqual, `[func.009:81]
   test
 `)
 		})
 	})
+}
+
+func prbgtest() {
+	Pdbgf("prbgtest content")
 }
