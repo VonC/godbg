@@ -11,9 +11,6 @@ import (
 	"strings"
 )
 
-var rxDbgLine, _ = regexp.Compile(`^.*[Vv]on[Cc](?:/prog/git)?/senvgo/main.go:(\d+)\s`)
-var rxDbgFnct, _ = regexp.Compile(`^\s+(?:com/VonC/senvgo)?(?:\.\(([^\)]+)\))?\.?([^:]+)`)
-
 // http://stackoverflow.com/a/23554672/6309 https://vividcortex.com/blog/2013/12/03/go-idiom-package-and-object/
 // you design a type with methods as usual, and then you also place matching functions at the package level itself.
 // These functions simply delegate to a default instance of the type that’s a private package-level variable, created in an init() function.
@@ -133,6 +130,10 @@ func (pdbg *Pdbg) ErrString() string {
 	return pdbg.berr.String()
 }
 
+// For instance: github.com/VonC/godbg/_test/_obj_test/gogdb.go:174 (0x44711b)
+var rxDbgLine, _ = regexp.Compile(`^.*\.go:(\d+)\s`)
+var rxDbgFnct, _ = regexp.Compile(`^\s+(?:.*?\(([^\)]+)\))?\.?([^:]+)`)
+
 func pdbgInc(scanner *bufio.Scanner, line string) string {
 	m := rxDbgLine.FindSubmatchIndex([]byte(line))
 	if len(m) == 0 {
@@ -205,10 +206,11 @@ func Pdbgf(format string, args ...interface{}) string {
 	if depth >= 2 {
 		spaces = strings.Repeat(" ", depth-2)
 	}
+	// fmt.Printf("spaces '%s', depth '%d'\n", spaces, depth)
 	res := pmsg
 	pmsg = spaces + pmsg
 	msg = pmsg + "\n" + spaces + "  " + msg + "\n"
 	// fmt.Printf("MSG '%v'\n", msg)
-	fmt.Fprint(os.Stderr, fmt.Sprint(msg))
+	fmt.Fprint(pdbg.Err(), fmt.Sprint(msg))
 	return res
 }
