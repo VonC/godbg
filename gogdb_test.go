@@ -77,7 +77,11 @@ err2 cerr2
 
 	Convey("Test pdbg print functions", t, func() {
 		Convey("Test pdbg print with global instance", func() {
+			SetBuffers(nil)
 			Pdbgf("test")
+			So(ErrString(), ShouldEqual, `[func.009:81]
+  test
+`)
 		})
 	})
 }
