@@ -82,6 +82,11 @@ func NewPdbg(options ...Option) *Pdbg {
 	return newpdbg
 }
 
+// ResetIOs reset the out and err buffer of global pdbg instance
+func ResetIOs() {
+	pdbg.ResetIOs()
+}
+
 // ResetIOs reset the out and err buffer
 // (unless they were the default stdout and stderr,
 // in which case it does nothing)

@@ -49,6 +49,20 @@ test2 content2`)
 err2 cerr2
 `)
 		})
+
+		Convey("Test custom buffer reset on global pdbg", func() {
+			SetBuffers(nil)
+			fmt.Fprint(Out(), "test content")
+			So(OutString(), ShouldEqual, `test content`)
+			fmt.Fprint(Err(), "err1 cerr")
+			So(ErrString(), ShouldEqual, `err1 cerr`)
+			ResetIOs()
+			fmt.Fprint(Out(), "test2 content2")
+			So(OutString(), ShouldEqual, `test2 content2`)
+			fmt.Fprint(Err(), "err2 cerr2")
+			So(ErrString(), ShouldEqual, `err2 cerr2`)
+		})
+
 		Convey("Test custom buffer on custom pdbg", func() {
 			apdbg := NewPdbg(SetBuffers)
 			fmt.Fprintln(apdbg.Out(), "test content")
