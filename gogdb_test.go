@@ -76,5 +76,8 @@ err2 cerr2
 	})
 
 	Convey("Test pdbg print functions", t, func() {
+		Convey("Test pdbg print with global instance", func() {
+			Pdbgf("test")
 		})
+	})
 }
