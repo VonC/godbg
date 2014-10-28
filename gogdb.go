@@ -139,15 +139,9 @@ func (pdbg *Pdbg) ErrString() string {
 var rxDbgLine, _ = regexp.Compile(`^.*\.go:(\d+)\s`)
 var rxDbgFnct, _ = regexp.Compile(`^\s+(?:.*?\(([^\)]+)\))?\.?([^:]+)`)
 
-func pdbgInc(scanner *bufio.Scanner, line string) string {
-	m := rxDbgLine.FindSubmatchIndex([]byte(line))
-	if len(m) == 0 {
-		return ""
-	}
-	dbgLine := line[m[2]:m[3]]
-	// fmt.Printf("line '%v', m '%+v'\n", line, m)
+func pdbgInc(scanner *bufio.Scanner, dbgLine string) string {
 	scanner.Scan()
-	line = scanner.Text()
+	line := scanner.Text()
 	mf := rxDbgFnct.FindSubmatchIndex([]byte(line))
 	// fmt.Printf("lineF '%v', mf '%+v'\n", line, mf)
 	if len(mf) == 0 {
@@ -174,26 +168,35 @@ func pdbgExcluded(dbg string) bool {
 
 // Pdbgf uses global Pdbg variable for printing strings, with indent and function name
 func Pdbgf(format string, args ...interface{}) string {
+	return pdbg.Pdbgf(format, args...)
+}
+
+// Pdbgf uses custom Pdbg variable for printing strings, with indent and function name
+func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 	msg := fmt.Sprintf(format+"\n", args...)
 	msg = strings.TrimSpace(msg)
 	bstack := bytes.NewBuffer(debug.Stack())
-	//fmt.Printf("%+v\n", bstack)
+	// fmt.Printf("%+v\n", bstack)
 
 	scanner := bufio.NewScanner(bstack)
 	pmsg := ""
 	depth := 0
 	for scanner.Scan() {
 		line := scanner.Text()
+		if strings.Contains(line, "/_obj_test/") {
+			depth = 1
+			continue
+		}
 		if strings.Contains(line, "smartystreets") {
 			break
 		}
 		m := rxDbgLine.FindSubmatchIndex([]byte(line))
-		//fmt.Printf("'%s' (%s) => '%+v'\n", line, rxDbgLine.String(), m)
+		// fmt.Printf("'%s' (%s) => '%+v'\n", line, rxDbgLine.String(), m)
 		if len(m) == 0 {
 			continue
 		}
 		if depth > 0 && depth < 4 {
-			dbg := pdbgInc(scanner, line)
+			dbg := pdbgInc(scanner, line[m[2]:m[3]])
 			if dbg == "" {
 				continue
 			}
