@@ -177,7 +177,7 @@ func Pdbgf(format string, args ...interface{}) string {
 	msg := fmt.Sprintf(format+"\n", args...)
 	msg = strings.TrimSpace(msg)
 	bstack := bytes.NewBuffer(debug.Stack())
-	// fmt.Printf("%+v", bstack)
+	//fmt.Printf("%+v\n", bstack)
 
 	scanner := bufio.NewScanner(bstack)
 	pmsg := ""
@@ -188,6 +188,7 @@ func Pdbgf(format string, args ...interface{}) string {
 			break
 		}
 		m := rxDbgLine.FindSubmatchIndex([]byte(line))
+		//fmt.Printf("'%s' (%s) => '%+v'\n", line, rxDbgLine.String(), m)
 		if len(m) == 0 {
 			continue
 		}
