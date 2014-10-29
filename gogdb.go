@@ -17,10 +17,11 @@ import (
 
 // Pdbg allows to print debug message with indent and function name added
 type Pdbg struct {
-	bout *bytes.Buffer
-	berr *bytes.Buffer
-	sout *bufio.Writer
-	serr *bufio.Writer
+	bout   *bytes.Buffer
+	berr   *bytes.Buffer
+	sout   *bufio.Writer
+	serr   *bufio.Writer
+	breaks []string
 }
 
 // Out returns a writer for normal messages.
@@ -79,6 +80,7 @@ func NewPdbg(options ...Option) *Pdbg {
 	for _, option := range options {
 		option(newpdbg)
 	}
+	newpdbg.breaks = append(newpdbg.breaks, "smartystreets")
 	return newpdbg
 }
 
@@ -161,7 +163,16 @@ func pdbgInc(scanner *bufio.Scanner, dbgLine string) string {
 
 func pdbgExcluded(dbg string) bool {
 	if strings.Contains(dbg, "ReadConfig:") {
-		return false
+		return true
+	}
+	return false
+}
+
+func (pdbg *Pdbg) pdbgBreak(dbg string) bool {
+	for _, b := range pdbg.breaks {
+		if strings.Contains(dbg, b) {
+			return true
+		}
 	}
 	return false
 }
@@ -187,7 +198,7 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 			depth = 1
 			continue
 		}
-		if strings.Contains(line, "smartystreets") {
+		if pdbg.pdbgBreak(line) {
 			break
 		}
 		m := rxDbgLine.FindSubmatchIndex([]byte(line))
