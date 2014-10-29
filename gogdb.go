@@ -192,9 +192,9 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 		}
 		m := rxDbgLine.FindSubmatchIndex([]byte(line))
 		// fmt.Printf("'%s' (%s) => '%+v'\n", line, rxDbgLine.String(), m)
-		if len(m) == 0 {
+		/*if len(m) == 0 {
 			continue
-		}
+		}*/
 		if depth > 0 && depth < 4 {
 			dbg := pdbgInc(scanner, line[m[2]:m[3]])
 			if dbg == "" {
