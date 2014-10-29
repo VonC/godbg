@@ -100,7 +100,7 @@ err2 cerr2
 			ResetIOs()
 			prbgtest()
 			So(ErrString(), ShouldEqual,
-				` [prbgtest:126] (func.010:101)
+				` [prbgtest:132] (func.010:101)
    prbgtest content
 `)
 		})
@@ -115,8 +115,14 @@ err2 cerr2
 			apdbg.ResetIOs()
 			prbgtestCustom(apdbg)
 			So(apdbg.ErrString(), ShouldEqual,
-				` [prbgtestCustom:130] (func.011:116)
+				` [prbgtestCustom:136] (func.011:116)
    prbgtest content2
+`)
+			apdbg.ResetIOs()
+			apdbg.pdbgTestInstance()
+			So(apdbg.ErrString(), ShouldEqual,
+				` [*Pdbg.pdbgTestInstance:140] (func.011:122)
+   pdbgTestInstance content3
 `)
 		})
 	})
@@ -128,4 +134,8 @@ func prbgtest() {
 
 func prbgtestCustom(pdbg *Pdbg) {
 	pdbg.Pdbgf("prbgtest content2")
+}
+
+func (pdbg *Pdbg) pdbgTestInstance() {
+	pdbg.Pdbgf("pdbgTestInstance content3")
 }
