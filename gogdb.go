@@ -54,7 +54,7 @@ func (pdbg *Pdbg) Err() io.Writer {
 }
 
 // global pdbg used for printing
-var pdbg = &Pdbg{}
+var pdbg = NewPdbg()
 
 // Option set an option for a Pdbg
 // http://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis
