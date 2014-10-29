@@ -144,9 +144,9 @@ func pdbgInc(scanner *bufio.Scanner, dbgLine string) string {
 	line := scanner.Text()
 	mf := rxDbgFnct.FindSubmatchIndex([]byte(line))
 	// fmt.Printf("lineF '%v', mf '%+v'\n", line, mf)
-	if len(mf) == 0 {
+	/*if len(mf) == 0 {
 		return ""
-	}
+	}*/
 	dbgFnct := ""
 	if mf[2] > -1 {
 		dbgFnct = line[mf[2]:mf[3]]
