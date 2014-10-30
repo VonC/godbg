@@ -17,11 +17,12 @@ import (
 
 // Pdbg allows to print debug message with indent and function name added
 type Pdbg struct {
-	bout   *bytes.Buffer
-	berr   *bytes.Buffer
-	sout   *bufio.Writer
-	serr   *bufio.Writer
-	breaks []string
+	bout     *bytes.Buffer
+	berr     *bytes.Buffer
+	sout     *bufio.Writer
+	serr     *bufio.Writer
+	breaks   []string
+	excludes []string
 }
 
 // Out returns a writer for normal messages.
@@ -72,6 +73,21 @@ func SetBuffers(apdbg *Pdbg) {
 	apdbg.sout = bufio.NewWriter(apdbg.bout)
 	apdbg.berr = bytes.NewBuffer(nil)
 	apdbg.serr = bufio.NewWriter(apdbg.berr)
+}
+
+// SetExcludes set excludes on a pdbg (nil for global pdbg)
+func (apdbg *Pdbg) SetExcludes(excludes []string) {
+	apdbg.excludes = excludes
+}
+
+// OptExcludes is an option to set excludes at the creation of a pdbg
+func OptExcludes(apdbg *Pdbg, excludes []string) func(*Pdbg) {
+	if apdbg == nil {
+		apdbg = pdbg
+	}
+	return func(apdbg *Pdbg) {
+		apdbg.SetExcludes(excludes)
+	}
 }
 
 // NewPdbg creates a PDbg instance, with options
@@ -162,8 +178,10 @@ func pdbgInc(scanner *bufio.Scanner, dbgLine string) string {
 }
 
 func pdbgExcluded(dbg string) bool {
-	if strings.Contains(dbg, "ReadConfig:") {
-		return true
+	for _, e := range pdbg.excludes {
+		if strings.Contains(dbg, e) {
+			return true
+		}
 	}
 	return false
 }
