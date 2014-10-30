@@ -7,6 +7,18 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
+func prbgtest() {
+	Pdbgf("prbgtest content")
+}
+
+func prbgtestCustom(pdbg *Pdbg) {
+	pdbg.Pdbgf("prbgtest content2")
+}
+
+func (pdbg *Pdbg) pdbgTestInstance() {
+	pdbg.Pdbgf("pdbgTestInstance content3")
+}
+
 func TestProject(t *testing.T) {
 	Convey("Test buffers", t, func() {
 
@@ -94,13 +106,13 @@ err2 cerr2
 			SetBuffers(nil)
 			Pdbgf("test")
 			So(ErrString(), ShouldEqual,
-				`[func.010:95]
+				`[func.011:107]
   test
 `)
 			ResetIOs()
 			prbgtest()
 			So(ErrString(), ShouldEqual,
-				` [prbgtest:132] (func.010:101)
+				` [prbgtest:11] (func.011:113)
    prbgtest content
 `)
 		})
@@ -109,33 +121,21 @@ err2 cerr2
 			apdbg := NewPdbg(SetBuffers)
 			apdbg.Pdbgf("test2")
 			So(apdbg.ErrString(), ShouldEqual,
-				`[func.011:110]
+				`[func.012:122]
   test2
 `)
 			apdbg.ResetIOs()
 			prbgtestCustom(apdbg)
 			So(apdbg.ErrString(), ShouldEqual,
-				` [prbgtestCustom:136] (func.011:116)
+				` [prbgtestCustom:15] (func.012:128)
    prbgtest content2
 `)
 			apdbg.ResetIOs()
 			apdbg.pdbgTestInstance()
 			So(apdbg.ErrString(), ShouldEqual,
-				` [*Pdbg.pdbgTestInstance:140] (func.011:122)
+				` [*Pdbg.pdbgTestInstance:19] (func.012:134)
    pdbgTestInstance content3
 `)
 		})
 	})
-}
-
-func prbgtest() {
-	Pdbgf("prbgtest content")
-}
-
-func prbgtestCustom(pdbg *Pdbg) {
-	pdbg.Pdbgf("prbgtest content2")
-}
-
-func (pdbg *Pdbg) pdbgTestInstance() {
-	pdbg.Pdbgf("pdbgTestInstance content3")
 }
