@@ -135,6 +135,18 @@ err2 cerr2
 			So(ErrString(), ShouldEqual,
 				` [globalPdbgExcludeTest:16] (func.014:134)
    calling no
+    [globalCNo:26] (globalNo:22) (globalPdbgExcludeTest:17)
+      gcalled2
+`)
+		})
+		Convey("Test pdbg exclude with custom instance", func() {
+			apdbg := NewPdbg(SetBuffers, OptExcludes([]string{"customNo"}))
+			customPdbgExcludeTest(apdbg)
+			So(apdbg.ErrString(), ShouldEqual,
+				` [customPdbgExcludeTest:30] (func.015:144)
+   calling cno
+    [customCNo:40] (customNo:36) (customPdbgExcludeTest:31)
+      ccalled2
 `)
 		})
 	})
