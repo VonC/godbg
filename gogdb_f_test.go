@@ -19,4 +19,23 @@ func globalPdbgExcludeTest() {
 
 func globalNo() {
 	Pdbgf("gcalled1")
+	globalCNo()
+}
+
+func globalCNo() {
+	Pdbgf("gcalled2")
+}
+
+func customPdbgExcludeTest(pdbg *Pdbg) {
+	pdbg.Pdbgf("calling cno")
+	customNo(pdbg)
+}
+
+func customNo(pdbg *Pdbg) {
+	pdbg.Pdbgf("ccalled1")
+	customCNo(pdbg)
+}
+
+func customCNo(pdbg *Pdbg) {
+	pdbg.Pdbgf("ccalled2")
 }
