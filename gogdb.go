@@ -174,7 +174,7 @@ func pdbgInc(scanner *bufio.Scanner, dbgLine string) string {
 	return dbgFnct + ":" + dbgLine
 }
 
-func pdbgExcluded(dbg string) bool {
+func (pdbg *Pdbg) pdbgExcluded(dbg string) bool {
 	for _, e := range pdbg.excludes {
 		if strings.Contains(dbg, e) {
 			return true
@@ -209,6 +209,7 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 	depth := 0
 	for scanner.Scan() {
 		line := scanner.Text()
+		// fmt.Printf("xx LINE '%+v'\n", line)
 		if strings.Contains(line, "/_obj_test/") {
 			depth = 1
 			continue
@@ -217,7 +218,7 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 			break
 		}
 		m := rxDbgLine.FindSubmatchIndex([]byte(line))
-		// fmt.Printf("'%s' (%s) => '%+v'\n", line, rxDbgLine.String(), m)
+		//fmt.Printf("'%s' (%s) => '%+v'\n", line, rxDbgLine.String(), m)
 		/*if len(m) == 0 {
 			continue
 		}*/
@@ -227,7 +228,7 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 				continue
 			}
 			if depth == 1 {
-				if pdbgExcluded(dbg) {
+				if pdbg.pdbgExcluded(dbg) {
 					return ""
 				}
 				pmsg = "[" + dbg + "]"
