@@ -81,11 +81,11 @@ func (apdbg *Pdbg) SetExcludes(excludes []string) {
 }
 
 // OptExcludes is an option to set excludes at the creation of a pdbg
-func OptExcludes(apdbg *Pdbg, excludes []string) func(*Pdbg) {
-	if apdbg == nil {
-		apdbg = pdbg
-	}
+func OptExcludes(excludes []string) Option {
 	return func(apdbg *Pdbg) {
+		if apdbg == nil {
+			apdbg = pdbg
+		}
 		apdbg.SetExcludes(excludes)
 	}
 }
