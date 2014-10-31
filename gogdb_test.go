@@ -126,4 +126,16 @@ err2 cerr2
 `)
 		})
 	})
+
+	Convey("Test pdbg excludes functions", t, func() {
+		Convey("Test pdbg exclude with global instance", func() {
+			SetBuffers(nil)
+			pdbg.SetExcludes([]string{"globalNo"})
+			globalPdbgExcludeTest()
+			So(ErrString(), ShouldEqual,
+				` [globalPdbgExcludeTest:16] (func.014:134)
+   calling no
+`)
+		})
+	})
 }
