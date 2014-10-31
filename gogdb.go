@@ -224,9 +224,9 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 		}*/
 		if depth > 0 && depth < 4 {
 			dbg := pdbgInc(scanner, line[m[2]:m[3]])
-			if dbg == "" {
+			/*if dbg == "" {
 				continue
-			}
+			}*/
 			if depth == 1 {
 				if pdbg.pdbgExcluded(dbg) {
 					return ""
