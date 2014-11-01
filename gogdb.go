@@ -76,8 +76,8 @@ func SetBuffers(apdbg *Pdbg) {
 }
 
 // SetExcludes set excludes on a pdbg (nil for global pdbg)
-func (apdbg *Pdbg) SetExcludes(excludes []string) {
-	apdbg.excludes = excludes
+func (pdbg *Pdbg) SetExcludes(excludes []string) {
+	pdbg.excludes = excludes
 }
 
 // OptExcludes is an option to set excludes at the creation of a pdbg
