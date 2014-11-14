@@ -94,6 +94,7 @@ func NewPdbg(options ...Option) *Pdbg {
 		option(newpdbg)
 	}
 	newpdbg.breaks = append(newpdbg.breaks, "smartystreets")
+	newpdbg.breaks = append(newpdbg.breaks, "(*Pdbg).Pdbgf")
 	return newpdbg
 }
 
@@ -218,7 +219,7 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 			break
 		}
 		m := rxDbgLine.FindSubmatchIndex([]byte(line))
-		//fmt.Printf("'%s' (%s) => '%+v'\n", line, rxDbgLine.String(), m)
+		// fmt.Printf("'%s' (%s) => '%+v'\n", line, rxDbgLine.String(), m)
 		/*if len(m) == 0 {
 			continue
 		}*/
