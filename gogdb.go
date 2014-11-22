@@ -6,8 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"regexp"
-	"runtime/debug"
+	"runtime"
 	"strings"
 )
 
@@ -151,33 +150,10 @@ func (pdbg *Pdbg) ErrString() string {
 	return pdbg.berr.String()
 }
 
-// For instance: github.com/VonC/godbg/_test/_obj_test/gogdb.go:174 (0x44711b)
-var rxDbgLine, _ = regexp.Compile(`^.*\.go:(\d+)\s`)
-var rxDbgFnct, _ = regexp.Compile(`^\s+(?:.*?\(([^\)]+)\))?\.?([^:]+)`)
-
-func pdbgInc(scanner *bufio.Scanner, dbgLine string) string {
-	scanner.Scan()
-	line := scanner.Text()
-	mf := rxDbgFnct.FindSubmatchIndex([]byte(line))
-	// fmt.Printf("lineF '%v', mf '%+v'\n", line, mf)
-	/*if len(mf) == 0 {
-		return ""
-	}*/
-	dbgFnct := ""
-	if mf[2] > -1 {
-		dbgFnct = line[mf[2]:mf[3]]
-	}
-	if dbgFnct != "" {
-		dbgFnct = dbgFnct + "."
-	}
-	dbgFnct = dbgFnct + line[mf[4]:mf[5]]
-
-	return dbgFnct + ":" + dbgLine
-}
-
 func (pdbg *Pdbg) pdbgExcluded(dbg string) bool {
 	for _, e := range pdbg.excludes {
 		if strings.Contains(dbg, e) {
+			fmt.Printf("EXCLUDE over '%v' including '%v'\n", dbg, e)
 			return true
 		}
 	}
@@ -187,6 +163,7 @@ func (pdbg *Pdbg) pdbgExcluded(dbg string) bool {
 func (pdbg *Pdbg) pdbgBreak(dbg string) bool {
 	for _, b := range pdbg.breaks {
 		if strings.Contains(dbg, b) {
+			fmt.Printf("BREAK over '%v' including '%v'\n", dbg, b)
 			return true
 		}
 	}
@@ -202,43 +179,31 @@ func Pdbgf(format string, args ...interface{}) string {
 func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 	msg := fmt.Sprintf(format+"\n", args...)
 	msg = strings.TrimSpace(msg)
-	bstack := bytes.NewBuffer(debug.Stack())
-	// fmt.Printf("%+v\n", bstack)
 
-	scanner := bufio.NewScanner(bstack)
 	pmsg := ""
 	depth := 0
-	for scanner.Scan() {
-		line := scanner.Text()
-		// fmt.Printf("xx LINE '%+v'\n", line)
-		if strings.Contains(line, "/_obj_test/") {
-			depth = 1
-			continue
-		}
-		if pdbg.pdbgBreak(line) {
+	for ok := true; ok; {
+		pc, file, line, ok := runtime.Caller(depth)
+		if !ok {
 			break
 		}
-		m := rxDbgLine.FindSubmatchIndex([]byte(line))
-		// fmt.Printf("'%s' (%s) => '%+v'\n", line, rxDbgLine.String(), m)
-		/*if len(m) == 0 {
-			continue
-		}*/
-		if depth > 0 && depth < 4 {
-			dbg := pdbgInc(scanner, line[m[2]:m[3]])
-			/*if dbg == "" {
-				continue
-			}*/
-			if depth == 1 {
-				if pdbg.pdbgExcluded(dbg) {
-					return ""
-				}
-				pmsg = "[" + dbg + "]"
-			} else {
-				pmsg = pmsg + " (" + dbg + ")"
+		fname := runtime.FuncForPC(pc).Name()
+		fmt.Printf("Name of function: '%v' (line %v): file '%v'\n", fname, line, file)
+		if pdbg.pdbgBreak(fname) {
+			break
+		}
+		dbg := fname + ":" + fmt.Sprintf("%d", line)
+		if depth == 1 {
+			if pdbg.pdbgExcluded(dbg) {
+				return ""
 			}
+			pmsg = "[" + dbg + "]"
+		} else {
+			pmsg = pmsg + " (" + dbg + ")"
 		}
 		depth = depth + 1
 	}
+
 	spaces := ""
 	if depth >= 2 {
 		spaces = strings.Repeat(" ", depth-2)
