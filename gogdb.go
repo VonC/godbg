@@ -93,7 +93,7 @@ func NewPdbg(options ...Option) *Pdbg {
 		option(newpdbg)
 	}
 	newpdbg.breaks = append(newpdbg.breaks, "smartystreets")
-	newpdbg.breaks = append(newpdbg.breaks, "(*Pdbg).Pdbgf")
+	//newpdbg.breaks = append(newpdbg.breaks, "(*Pdbg).Pdbgf")
 	return newpdbg
 }
 
@@ -203,6 +203,7 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 		}
 		depth = depth + 1
 	}
+	depth = depth - 1
 
 	spaces := ""
 	if depth >= 2 {
