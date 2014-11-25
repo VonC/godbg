@@ -22,6 +22,7 @@ type Pdbg struct {
 	serr     *bufio.Writer
 	breaks   []string
 	excludes []string
+	skips    []string
 }
 
 // Out returns a writer for normal messages.
@@ -94,6 +95,7 @@ func NewPdbg(options ...Option) *Pdbg {
 	}
 	newpdbg.breaks = append(newpdbg.breaks, "smartystreets")
 	//newpdbg.breaks = append(newpdbg.breaks, "(*Pdbg).Pdbgf")
+	newpdbg.skips = append(newpdbg.breaks, "/gogdb.go'")
 	return newpdbg
 }
 
@@ -170,6 +172,16 @@ func (pdbg *Pdbg) pdbgBreak(dbg string) bool {
 	return false
 }
 
+func (pdbg *Pdbg) pdbgSkip(dbg string) bool {
+	for _, s := range pdbg.skips {
+		if strings.Contains(dbg, s) {
+			fmt.Printf("SKIP over '%v' including '%v'\n", dbg, s)
+			return true
+		}
+	}
+	return false
+}
+
 // Pdbgf uses global Pdbg variable for printing strings, with indent and function name
 func Pdbgf(format string, args ...interface{}) string {
 	return pdbg.Pdbgf(format, args...)
@@ -182,15 +194,22 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 
 	pmsg := ""
 	depth := 0
+	nbskip := 0
 	for ok := true; ok; {
 		pc, file, line, ok := runtime.Caller(depth)
 		if !ok {
 			break
 		}
 		fname := runtime.FuncForPC(pc).Name()
-		fmt.Printf("Name of function: '%v' (line %v): file '%v'\n", fname, line, file)
-		if pdbg.pdbgBreak(fname) {
+		fline := fmt.Sprintf("Name of function: '%v': '%+x' (line %v): file '%v'\n", fname, fname, line, file)
+		fmt.Println(fline)
+		if pdbg.pdbgBreak(fline) {
 			break
+		}
+		if pdbg.pdbgSkip(fline) {
+			depth = depth + 1
+			nbskip = nbskip + 1
+			continue
 		}
 		dbg := fname + ":" + fmt.Sprintf("%d", line)
 		if depth == 1 {
@@ -203,7 +222,7 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 		}
 		depth = depth + 1
 	}
-	depth = depth - 1
+	depth = depth - nbskip
 
 	spaces := ""
 	if depth >= 2 {
