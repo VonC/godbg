@@ -205,6 +205,9 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 		fname := runtime.FuncForPC(pc).Name()
 		fline := fmt.Sprintf("Name of function: '%v': '%+x' (line %v): file '%v'\n", fname, fname, line, file)
 		fmt.Println(fline)
+		if pdbg.pdbgExcluded(fline) {
+			return ""
+		}
 		if pdbg.pdbgBreak(fline) {
 			break
 		}
@@ -217,9 +220,6 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 		fname = fnamerx1.ReplaceAllString(fname, "func.")
 		dbg := fname + ":" + fmt.Sprintf("%d", line)
 		if first {
-			if pdbg.pdbgExcluded(dbg) {
-				return ""
-			}
 			pmsg = "[" + dbg + "]"
 		} else {
 			pmsg = pmsg + " (" + dbg + ")"
