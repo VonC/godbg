@@ -195,6 +195,7 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 	pmsg := ""
 	depth := 0
 	nbskip := 0
+	first := true
 	for ok := true; ok; {
 		pc, file, line, ok := runtime.Caller(depth)
 		if !ok {
@@ -212,7 +213,7 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 			continue
 		}
 		dbg := fname + ":" + fmt.Sprintf("%d", line)
-		if depth == 1 {
+		if first {
 			if pdbg.pdbgExcluded(dbg) {
 				return ""
 			}
@@ -220,6 +221,7 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 		} else {
 			pmsg = pmsg + " (" + dbg + ")"
 		}
+		first = false
 		depth = depth + 1
 	}
 	depth = depth - nbskip
