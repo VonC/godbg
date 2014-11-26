@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"regexp"
 	"runtime"
 	"strings"
 )
@@ -212,6 +213,8 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 			nbskip = nbskip + 1
 			continue
 		}
+		fnamerx1 := regexp.MustCompile(`.*\.func[^a-zA-Z0-9]`)
+		fname = fnamerx1.ReplaceAllString(fname, "func.")
 		dbg := fname + ":" + fmt.Sprintf("%d", line)
 		if first {
 			if pdbg.pdbgExcluded(dbg) {
