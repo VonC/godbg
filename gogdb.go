@@ -219,6 +219,16 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 		}
 		fnamerx1 := regexp.MustCompile(`.*\.func[^a-zA-Z0-9]`)
 		fname = fnamerx1.ReplaceAllString(fname, "func.")
+		fnamerx2 := regexp.MustCompile(`.*/`)
+		fname = fnamerx2.ReplaceAllString(fname, "")
+		if !strings.HasPrefix(fname, "func.") {
+			fnamerx3 := regexp.MustCompile(`^.*?\.`)
+			fmt.Printf("fname before: '%v'", fname)
+			fname = fnamerx3.ReplaceAllString(fname, "")
+			fmt.Printf(" => fname after: '%v'\n", fname)
+			fnamerx4 := regexp.MustCompile(`[\(\)]`)
+			fname = fnamerx4.ReplaceAllString(fname, "")
+		}
 		dbg := fname + ":" + fmt.Sprintf("%d", line)
 		if first {
 			nbInitialSkips = nbskip
