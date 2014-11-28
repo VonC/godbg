@@ -207,7 +207,11 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 		fline := fmt.Sprintf("Name of function: '%v': '%+x' (line %v): file '%v'\n", fname, fname, line, file)
 		fmt.Println(fline)
 		if pdbg.pdbgExcluded(fline) {
-			return ""
+			depth = depth + 1
+			if first {
+				break
+			}
+			continue
 		}
 		if pdbg.pdbgBreak(fline) {
 			break
