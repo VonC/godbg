@@ -3,6 +3,7 @@ package godbg
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"testing"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -94,13 +95,13 @@ err2 cerr2
 			SetBuffers(nil)
 			Pdbgf("test")
 			So(ErrString(), ShouldEqual,
-				`[func.011:95]
+				`[func.011:96]
   test
 `)
 			ResetIOs()
 			prbgtest()
 			So(ErrString(), ShouldEqual,
-				` [prbgtest:4] (func.011:101)
+				` [prbgtest:4] (func.011:102)
    prbgtest content
 `)
 		})
@@ -109,21 +110,29 @@ err2 cerr2
 			apdbg := NewPdbg(SetBuffers)
 			apdbg.Pdbgf("test2")
 			So(apdbg.ErrString(), ShouldEqual,
-				`[func.012:110]
+				`[func.012:111]
   test2
 `)
 			apdbg.ResetIOs()
 			prbgtestCustom(apdbg)
 			So(apdbg.ErrString(), ShouldEqual,
-				` [prbgtestCustom:8] (func.012:116)
+				` [prbgtestCustom:8] (func.012:117)
    prbgtest content2
 `)
 			apdbg.ResetIOs()
 			apdbg.pdbgTestInstance()
 			So(apdbg.ErrString(), ShouldEqual,
-				` [*Pdbg.pdbgTestInstance:12] (func.012:122)
+				` [*Pdbg.pdbgTestInstance:12] (func.012:123)
    pdbgTestInstance content3
 `)
+		})
+		Convey("Test pdbg prints nothing if runtime.Caller fails", func() {
+			mycaller = failCaller
+			apdbg := NewPdbg(SetBuffers)
+			apdbg.Pdbgf("test fail")
+			So(apdbg.ErrString(), ShouldEqual, `  test fail
+`)
+			mycaller = runtime.Caller
 		})
 	})
 
@@ -133,9 +142,9 @@ err2 cerr2
 			pdbg.SetExcludes([]string{"globalNo"})
 			globalPdbgExcludeTest()
 			So(ErrString(), ShouldEqual,
-				` [globalPdbgExcludeTest:16] (func.014:134)
+				` [globalPdbgExcludeTest:16] (func.015:143)
    calling no
-   [globalCNo:26] (globalPdbgExcludeTest:17) (func.014:134)
+   [globalCNo:26] (globalPdbgExcludeTest:17) (func.015:143)
      gcalled2
 `)
 		})
@@ -143,11 +152,15 @@ err2 cerr2
 			apdbg := NewPdbg(SetBuffers, OptExcludes([]string{"customNo"}))
 			customPdbgExcludeTest(apdbg)
 			So(apdbg.ErrString(), ShouldEqual,
-				` [customPdbgExcludeTest:30] (func.015:144)
+				` [customPdbgExcludeTest:30] (func.016:153)
    calling cno
-   [customCNo:40] (customPdbgExcludeTest:31) (func.015:144)
+   [customCNo:40] (customPdbgExcludeTest:31) (func.016:153)
      ccalled2
 `)
 		})
 	})
+}
+
+func failCaller(skip int) (pc uintptr, file string, line int, ok bool) {
+	return 0, "fail", skip, false
 }

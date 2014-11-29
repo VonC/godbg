@@ -188,6 +188,10 @@ func Pdbgf(format string, args ...interface{}) string {
 	return pdbg.Pdbgf(format, args...)
 }
 
+type caller func(skip int) (pc uintptr, file string, line int, ok bool)
+
+var mycaller = runtime.Caller
+
 // Pdbgf uses custom Pdbg variable for printing strings, with indent and function name
 func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 	msg := fmt.Sprintf(format+"\n", args...)
@@ -200,7 +204,7 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 	first := true
 	// fmt.Printf("~~~~~~~~~~~~~~~~~~~~~~\n")
 	for ok := true; ok; {
-		pc, file, line, ok := runtime.Caller(depth)
+		pc, file, line, ok := mycaller(depth)
 		if !ok {
 			break
 		}
@@ -252,8 +256,10 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 	}
 	// fmt.Printf("spaces '%s', depth '%d'\n", spaces, depth)
 	res := pmsg
-	pmsg = spaces + pmsg
-	msg = pmsg + "\n" + spaces + "  " + msg + "\n"
+	if pmsg != "" {
+		pmsg = spaces + pmsg + "\n"
+	}
+	msg = pmsg + spaces + "  " + msg + "\n"
 	// fmt.Printf("==> MSG '%v'\n", msg)
 	fmt.Fprint(pdbg.Err(), fmt.Sprint(msg))
 	return res
