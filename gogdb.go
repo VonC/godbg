@@ -156,7 +156,7 @@ func (pdbg *Pdbg) ErrString() string {
 func (pdbg *Pdbg) pdbgExcluded(dbg string) bool {
 	for _, e := range pdbg.excludes {
 		if strings.Contains(dbg, e) {
-			fmt.Printf("EXCLUDE over '%v' including '%v'\n", dbg, e)
+			// fmt.Printf("EXCLUDE over '%v' including '%v'\n", dbg, e)
 			return true
 		}
 	}
@@ -166,7 +166,7 @@ func (pdbg *Pdbg) pdbgExcluded(dbg string) bool {
 func (pdbg *Pdbg) pdbgBreak(dbg string) bool {
 	for _, b := range pdbg.breaks {
 		if strings.Contains(dbg, b) {
-			fmt.Printf("BREAK over '%v' including '%v'\n", dbg, b)
+			// fmt.Printf("BREAK over '%v' including '%v'\n", dbg, b)
 			return true
 		}
 	}
@@ -176,7 +176,7 @@ func (pdbg *Pdbg) pdbgBreak(dbg string) bool {
 func (pdbg *Pdbg) pdbgSkip(dbg string) bool {
 	for _, s := range pdbg.skips {
 		if strings.Contains(dbg, s) {
-			fmt.Printf("SKIP over '%v' including '%v'\n", dbg, s)
+			// fmt.Printf("SKIP over '%v' including '%v'\n", dbg, s)
 			return true
 		}
 	}
@@ -198,6 +198,7 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 	nbskip := 0
 	nbInitialSkips := 0
 	first := true
+	// fmt.Printf("~~~~~~~~~~~~~~~~~~~~~~\n")
 	for ok := true; ok; {
 		pc, file, line, ok := runtime.Caller(depth)
 		if !ok {
@@ -205,11 +206,11 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 		}
 		fname := runtime.FuncForPC(pc).Name()
 		fline := fmt.Sprintf("Name of function: '%v': '%+x' (line %v): file '%v'\n", fname, fname, line, file)
-		fmt.Println(fline)
+		// fmt.Println(fline)
 		if pdbg.pdbgExcluded(fline) {
 			depth = depth + 1
 			if first {
-				break
+				return ""
 			}
 			continue
 		}
@@ -227,9 +228,9 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 		fname = fnamerx2.ReplaceAllString(fname, "")
 		if !strings.HasPrefix(fname, "func.") {
 			fnamerx3 := regexp.MustCompile(`^.*?\.`)
-			fmt.Printf("fname before: '%v'", fname)
+			// fmt.Printf("fname before: '%v'", fname)
 			fname = fnamerx3.ReplaceAllString(fname, "")
-			fmt.Printf(" => fname after: '%v'\n", fname)
+			// fmt.Printf(" => fname after: '%v'\n", fname)
 			fnamerx4 := regexp.MustCompile(`[\(\)]`)
 			fname = fnamerx4.ReplaceAllString(fname, "")
 		}
@@ -253,7 +254,7 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 	res := pmsg
 	pmsg = spaces + pmsg
 	msg = pmsg + "\n" + spaces + "  " + msg + "\n"
-	// fmt.Printf("MSG '%v'\n", msg)
+	// fmt.Printf("==> MSG '%v'\n", msg)
 	fmt.Fprint(pdbg.Err(), fmt.Sprint(msg))
 	return res
 }
