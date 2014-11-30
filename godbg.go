@@ -96,7 +96,7 @@ func NewPdbg(options ...Option) *Pdbg {
 	}
 	newpdbg.breaks = append(newpdbg.breaks, "smartystreets")
 	//newpdbg.breaks = append(newpdbg.breaks, "(*Pdbg).Pdbgf")
-	newpdbg.skips = append(newpdbg.breaks, "/gogdb.go'")
+	newpdbg.skips = append(newpdbg.breaks, "/godbg.go'")
 	return newpdbg
 }
 
