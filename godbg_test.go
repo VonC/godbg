@@ -95,13 +95,13 @@ err2 cerr2
 			SetBuffers(nil)
 			Pdbgf("test")
 			So(ErrString(), ShouldEqual,
-				`[func.011:96]
+				`[func.012:96]
   test
 `)
 			ResetIOs()
 			prbgtest()
 			So(ErrString(), ShouldEqual,
-				` [prbgtest:4] (func.011:102)
+				` [prbgtest:4] (func.012:102)
    prbgtest content
 `)
 		})
@@ -110,19 +110,19 @@ err2 cerr2
 			apdbg := NewPdbg(SetBuffers)
 			apdbg.Pdbgf("test2")
 			So(apdbg.ErrString(), ShouldEqual,
-				`[func.012:111]
+				`[func.013:111]
   test2
 `)
 			apdbg.ResetIOs()
 			prbgtestCustom(apdbg)
 			So(apdbg.ErrString(), ShouldEqual,
-				` [prbgtestCustom:8] (func.012:117)
+				` [prbgtestCustom:8] (func.013:117)
    prbgtest content2
 `)
 			apdbg.ResetIOs()
 			apdbg.pdbgTestInstance()
 			So(apdbg.ErrString(), ShouldEqual,
-				` [*Pdbg.pdbgTestInstance:12] (func.012:123)
+				` [*Pdbg.pdbgTestInstance:12] (func.013:123)
    pdbgTestInstance content3
 `)
 		})
@@ -142,9 +142,9 @@ err2 cerr2
 			pdbg.SetExcludes([]string{"globalNo"})
 			globalPdbgExcludeTest()
 			So(ErrString(), ShouldEqual,
-				` [globalPdbgExcludeTest:16] (func.015:143)
+				` [globalPdbgExcludeTest:16] (func.016:143)
    calling no
-   [globalCNo:26] (globalPdbgExcludeTest:17) (func.015:143)
+   [globalCNo:26] (globalPdbgExcludeTest:17) (func.016:143)
      gcalled2
 `)
 		})
@@ -152,10 +152,24 @@ err2 cerr2
 			apdbg := NewPdbg(SetBuffers, OptExcludes([]string{"customNo"}))
 			customPdbgExcludeTest(apdbg)
 			So(apdbg.ErrString(), ShouldEqual,
-				` [customPdbgExcludeTest:30] (func.016:153)
+				` [customPdbgExcludeTest:30] (func.017:153)
    calling cno
-   [customCNo:40] (customPdbgExcludeTest:31) (func.016:153)
+   [customCNo:40] (customPdbgExcludeTest:31) (func.017:153)
      ccalled2
+`)
+		})
+	})
+
+	Convey("Test pdbg skips functions", t, func() {
+		Convey("Test pdbg skip with global instance", func() {
+			SetBuffers(nil)
+			pdbg.SetSkips([]string{"globalNo"})
+			globalPdbgExcludeTest()
+			So(ErrString(), ShouldEqual,
+				` [globalPdbgExcludeTest:16] (func.015:143)
+   calling no
+   [globalCNo:26] (globalPdbgExcludeTest:17) (func.015:143)
+     gcalled2
 `)
 		})
 	})

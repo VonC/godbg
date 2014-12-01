@@ -88,6 +88,18 @@ func OptExcludes(excludes []string) Option {
 	}
 }
 
+// SetExcludes set skips on a pdbg (nil for global pdbg)
+func (pdbg *Pdbg) SetSkips(skips []string) {
+	pdbg.skips = skips
+}
+
+// OptExcludes is an option to set excludes at the creation of a pdbg
+func OptSkips(skips []string) Option {
+	return func(apdbg *Pdbg) {
+		apdbg.SetSkips(skips)
+	}
+}
+
 // NewPdbg creates a PDbg instance, with options
 func NewPdbg(options ...Option) *Pdbg {
 	newpdbg := &Pdbg{}
