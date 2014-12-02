@@ -90,7 +90,9 @@ func OptExcludes(excludes []string) Option {
 
 // SetExcludes set skips on a pdbg (nil for global pdbg)
 func (pdbg *Pdbg) SetSkips(skips []string) {
-	pdbg.skips = skips
+	sk := []string{"/godbg.go'"}
+	sk = append(sk, skips...)
+	pdbg.skips = sk
 }
 
 // OptExcludes is an option to set excludes at the creation of a pdbg
@@ -108,7 +110,7 @@ func NewPdbg(options ...Option) *Pdbg {
 	}
 	newpdbg.breaks = append(newpdbg.breaks, "smartystreets")
 	//newpdbg.breaks = append(newpdbg.breaks, "(*Pdbg).Pdbgf")
-	newpdbg.skips = append(newpdbg.breaks, "/godbg.go'")
+	newpdbg.skips = append(newpdbg.skips, "/godbg.go'")
 	return newpdbg
 }
 
@@ -168,7 +170,7 @@ func (pdbg *Pdbg) ErrString() string {
 func (pdbg *Pdbg) pdbgExcluded(dbg string) bool {
 	for _, e := range pdbg.excludes {
 		if strings.Contains(dbg, e) {
-			// fmt.Printf("EXCLUDE over '%v' including '%v'\n", dbg, e)
+			fmt.Printf("EXCLUDE over '%v' including '%v'\n", dbg, e)
 			return true
 		}
 	}
@@ -178,21 +180,25 @@ func (pdbg *Pdbg) pdbgExcluded(dbg string) bool {
 func (pdbg *Pdbg) pdbgBreak(dbg string) bool {
 	for _, b := range pdbg.breaks {
 		if strings.Contains(dbg, b) {
-			// fmt.Printf("BREAK over '%v' including '%v'\n", dbg, b)
+			fmt.Printf("BREAK over '%v' including '%v'\n", dbg, b)
 			return true
 		}
 	}
 	return false
 }
 
-func (pdbg *Pdbg) pdbgSkip(dbg string) bool {
-	for _, s := range pdbg.skips {
+func (pdbg *Pdbg) pdbgSkip(dbg string) (bool, int) {
+	depthToAdd := 0
+	for i, s := range pdbg.skips {
 		if strings.Contains(dbg, s) {
-			// fmt.Printf("SKIP over '%v' including '%v'\n", dbg, s)
-			return true
+			if i > 0 {
+				depthToAdd = 1
+			}
+			fmt.Printf("SKIP over '%v' including '%v'\n", dbg, s)
+			return true, depthToAdd
 		}
 	}
-	return false
+	return false, depthToAdd
 }
 
 // Pdbgf uses global Pdbg variable for printing strings, with indent and function name
@@ -214,7 +220,8 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 	nbskip := 0
 	nbInitialSkips := 0
 	first := true
-	// fmt.Printf("~~~~~~~~~~~~~~~~~~~~~~\n")
+	addOneForSkip := 0
+	fmt.Printf("~~~~~~~~~~~~~~~~~~~~~~\n")
 	for ok := true; ok; {
 		pc, file, line, ok := mycaller(depth)
 		if !ok {
@@ -222,7 +229,7 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 		}
 		fname := runtime.FuncForPC(pc).Name()
 		fline := fmt.Sprintf("Name of function: '%v': '%+x' (line %v): file '%v'\n", fname, fname, line, file)
-		// fmt.Println(fline)
+		fmt.Println(fline)
 		if pdbg.pdbgExcluded(fline) {
 			depth = depth + 1
 			if first {
@@ -233,9 +240,10 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 		if pdbg.pdbgBreak(fline) {
 			break
 		}
-		if pdbg.pdbgSkip(fline) {
+		if isSkipped, depthToAdd := pdbg.pdbgSkip(fline); isSkipped {
 			depth = depth + 1
 			nbskip = nbskip + 1
+			addOneForSkip = addOneForSkip + depthToAdd
 			continue
 		}
 		fnamerx1 := regexp.MustCompile(`.*\.func[^a-zA-Z0-9]`)
@@ -252,7 +260,7 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 		}
 		dbg := fname + ":" + fmt.Sprintf("%d", line)
 		if first {
-			nbInitialSkips = nbskip
+			nbInitialSkips = nbskip + addOneForSkip
 			pmsg = "[" + dbg + "]"
 		} else {
 			pmsg = pmsg + " (" + dbg + ")"
@@ -260,19 +268,20 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 		first = false
 		depth = depth + 1
 	}
-	depth = depth - nbInitialSkips + 1
+	finalDepth := depth
+	depth = finalDepth - nbInitialSkips
 
 	spaces := ""
 	if depth >= 2 {
 		spaces = strings.Repeat(" ", depth-2)
 	}
-	// fmt.Printf("spaces '%s', depth '%d'\n", spaces, depth)
+	fmt.Printf("spaces '%s', finalDepth '%d', depth '%d', nbInitialSkips '%d', addOneForSkip='%d'\n", spaces, finalDepth, depth, nbInitialSkips, addOneForSkip)
 	res := pmsg
 	if pmsg != "" {
 		pmsg = spaces + pmsg + "\n"
 	}
 	msg = pmsg + spaces + "  " + msg + "\n"
-	// fmt.Printf("==> MSG '%v'\n", msg)
+	fmt.Printf("==> MSG '%v'\n", msg)
 	fmt.Fprint(pdbg.Err(), fmt.Sprint(msg))
 	return res
 }
