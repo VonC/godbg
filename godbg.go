@@ -260,7 +260,8 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 		}
 		dbg := fname + ":" + fmt.Sprintf("%d", line)
 		if first {
-			nbInitialSkips = nbskip + addOneForSkip
+			fmt.Printf(" => nbskip '%v'; addOneForSkip '%v'\n", nbskip, addOneForSkip)
+			nbInitialSkips = nbskip - addOneForSkip
 			pmsg = "[" + dbg + "]"
 		} else {
 			pmsg = pmsg + " (" + dbg + ")"
@@ -269,11 +270,11 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 		depth = depth + 1
 	}
 	finalDepth := depth
-	depth = finalDepth - nbInitialSkips
+	depth = finalDepth - nbInitialSkips - 1
 
 	spaces := ""
-	if depth >= 2 {
-		spaces = strings.Repeat(" ", depth-2)
+	if depth >= 0 {
+		spaces = strings.Repeat(" ", depth*2)
 	}
 	fmt.Printf("spaces '%s', finalDepth '%d', depth '%d', nbInitialSkips '%d', addOneForSkip='%d'\n", spaces, finalDepth, depth, nbInitialSkips, addOneForSkip)
 	res := pmsg
