@@ -148,7 +148,7 @@ err2 cerr2
         gcalled2
 `)
 		})
-		Convey("Test pdbg exclude with custom instance", func() {
+		SkipConvey("Test pdbg exclude with custom instance", func() {
 			apdbg := NewPdbg(SetBuffers, OptExcludes([]string{"customNo"}))
 			customPdbgExcludeTest(apdbg)
 			So(apdbg.ErrString(), ShouldEqual,
