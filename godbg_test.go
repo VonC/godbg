@@ -137,7 +137,7 @@ err2 cerr2
 	})
 
 	Convey("Test pdbg excludes functions", t, func() {
-		Convey("Test pdbg exclude with global instance", func() {
+		SkipConvey("Test pdbg exclude with global instance", func() {
 			SetBuffers(nil)
 			pdbg.SetExcludes([]string{"globalNo"})
 			globalPdbgExcludeTest()
@@ -148,7 +148,7 @@ err2 cerr2
         gcalled2
 `)
 		})
-		SkipConvey("Test pdbg exclude with custom instance", func() {
+		Convey("Test pdbg exclude with custom instance", func() {
 			apdbg := NewPdbg(SetBuffers, OptExcludes([]string{"customNo"}))
 			customPdbgExcludeTest(apdbg)
 			So(apdbg.ErrString(), ShouldEqual,
