@@ -101,8 +101,8 @@ err2 cerr2
 			ResetIOs()
 			prbgtest()
 			So(ErrString(), ShouldEqual,
-				` [prbgtest:4] (func.012:102)
-   prbgtest content
+				`  [prbgtest:4] (func.012:102)
+    prbgtest content
 `)
 		})
 
@@ -116,14 +116,14 @@ err2 cerr2
 			apdbg.ResetIOs()
 			prbgtestCustom(apdbg)
 			So(apdbg.ErrString(), ShouldEqual,
-				` [prbgtestCustom:8] (func.013:117)
-   prbgtest content2
+				`  [prbgtestCustom:8] (func.013:117)
+    prbgtest content2
 `)
 			apdbg.ResetIOs()
 			apdbg.pdbgTestInstance()
 			So(apdbg.ErrString(), ShouldEqual,
-				` [*Pdbg.pdbgTestInstance:12] (func.013:123)
-   pdbgTestInstance content3
+				`  [*Pdbg.pdbgTestInstance:12] (func.013:123)
+    pdbgTestInstance content3
 `)
 		})
 		Convey("Test pdbg prints nothing if runtime.Caller fails", func() {
