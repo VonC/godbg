@@ -90,7 +90,7 @@ err2 cerr2
 		})
 	})
 
-	SkipConvey("Test pdbg print functions", t, func() {
+	Convey("Test pdbg print functions", t, func() {
 		Convey("Test pdbg print with global instance", func() {
 			SetBuffers(nil)
 			Pdbgf("test")
@@ -136,8 +136,8 @@ err2 cerr2
 		})
 	})
 
-	Convey("Test pdbg excludes functions", t, func() {
-		SkipConvey("Test pdbg exclude with global instance", func() {
+	SkipConvey("Test pdbg excludes functions", t, func() {
+		Convey("Test pdbg exclude with global instance", func() {
 			SetBuffers(nil)
 			pdbg.SetExcludes([]string{"globalNo"})
 			globalPdbgExcludeTest()
