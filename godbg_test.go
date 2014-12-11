@@ -168,8 +168,6 @@ err2 cerr2
 			So(ErrString(), ShouldEqual,
 				`  [globalPdbgExcludeTest:16] (func.019:167)
     calling no
-    [globalPdbgExcludeTest:17] (func.019:167)
-      gcalled1
       [globalCNo:26] (globalPdbgExcludeTest:17) (func.019:167)
         gcalled2
 `)
