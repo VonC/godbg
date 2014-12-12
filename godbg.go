@@ -170,7 +170,7 @@ func (pdbg *Pdbg) ErrString() string {
 func (pdbg *Pdbg) pdbgExcluded(dbg string) bool {
 	for _, e := range pdbg.excludes {
 		if strings.Contains(dbg, e) {
-			fmt.Printf("EXCLUDE over '%v' including '%v'\n", dbg, e)
+			// fmt.Printf("EXCLUDE over '%v' including '%v'\n", dbg, e) // DBG
 			return true
 		}
 	}
@@ -180,7 +180,7 @@ func (pdbg *Pdbg) pdbgExcluded(dbg string) bool {
 func (pdbg *Pdbg) pdbgBreak(dbg string) bool {
 	for _, b := range pdbg.breaks {
 		if strings.Contains(dbg, b) {
-			fmt.Printf("BREAK over '%v' including '%v'\n", dbg, b)
+			// fmt.Printf("BREAK over '%v' including '%v'\n", dbg, b) // DBG
 			return true
 		}
 	}
@@ -194,7 +194,7 @@ func (pdbg *Pdbg) pdbgSkip(dbg string) (bool, int) {
 			if i > 0 {
 				depthToAdd = 1
 			}
-			fmt.Printf("SKIP over '%v' including '%v'\n", dbg, s)
+			// fmt.Printf("SKIP over '%v' including '%v'\n", dbg, s) // DBG
 			return true, depthToAdd
 		}
 	}
@@ -221,7 +221,7 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 	nbInitialSkips := 0
 	first := true
 	addOneForSkip := 0
-	fmt.Printf("~~~~~~~~~~~~~~~~~~~~~~\n")
+	// fmt.Printf("~~~~~~~~~~~~~~~~~~~~~~\n") // DBG
 	for ok := true; ok; {
 		pc, file, line, ok := mycaller(depth)
 		if !ok {
@@ -229,7 +229,7 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 		}
 		fname := runtime.FuncForPC(pc).Name()
 		fline := fmt.Sprintf("Name of function: '%v': '%+x' (line %v): file '%v'\n", fname, fname, line, file)
-		fmt.Println(fline)
+		// fmt.Println(fline) // DBG
 		if pdbg.pdbgExcluded(fline) {
 			depth = depth + 1
 			if first {
@@ -260,7 +260,7 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 		}
 		dbg := fname + ":" + fmt.Sprintf("%d", line)
 		if first {
-			fmt.Printf(" => nbskip '%v'; addOneForSkip '%v'\n", nbskip, addOneForSkip)
+			// fmt.Printf(" => nbskip '%v'; addOneForSkip '%v'\n", nbskip, addOneForSkip) // DBG
 			nbInitialSkips = nbskip - addOneForSkip
 			pmsg = "[" + dbg + "]"
 		} else {
@@ -276,13 +276,13 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 	if depth >= 0 {
 		spaces = strings.Repeat(" ", depth*2)
 	}
-	fmt.Printf("spaces '%s', finalDepth '%d', depth '%d', nbInitialSkips '%d', addOneForSkip='%d'\n", spaces, finalDepth, depth, nbInitialSkips, addOneForSkip)
+	// fmt.Printf("spaces '%s', finalDepth '%d', depth '%d', nbInitialSkips '%d', addOneForSkip='%d'\n", spaces, finalDepth, depth, nbInitialSkips, addOneForSkip) // DBG
 	res := pmsg
 	if pmsg != "" {
 		pmsg = spaces + pmsg + "\n"
 	}
 	msg = pmsg + spaces + "  " + msg + "\n"
-	fmt.Printf("==> MSG '%v'\n", msg)
+	// fmt.Printf("==> MSG '%v'\n", msg) // DBG
 	fmt.Fprint(pdbg.Err(), fmt.Sprint(msg))
 	return res
 }
