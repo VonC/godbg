@@ -9,7 +9,7 @@ import (
 )
 
 func TestProject(t *testing.T) {
-	SkipConvey("Test buffers", t, func() {
+	Convey("Test buffers", t, func() {
 
 		Convey("By Default, equals to std", func() {
 			So(Out(), ShouldEqual, os.Stdout)
@@ -136,7 +136,7 @@ err2 cerr2
 		})
 	})
 
-	SkipConvey("Test pdbg excludes functions", t, func() {
+	Convey("Test pdbg excludes functions", t, func() {
 		Convey("Test pdbg exclude with global instance", func() {
 			SetBuffers(nil)
 			pdbg.SetExcludes([]string{"globalNo"})
@@ -160,7 +160,7 @@ err2 cerr2
 		})
 	})
 
-	SkipConvey("Test pdbg skips functions", t, func() {
+	Convey("Test pdbg skips functions", t, func() {
 		Convey("Test pdbg skip with global instance", func() {
 			SetBuffers(nil)
 			pdbg.SetSkips([]string{"globalNo"})
