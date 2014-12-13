@@ -95,7 +95,7 @@ func (pdbg *Pdbg) SetSkips(skips []string) {
 	pdbg.skips = sk
 }
 
-// OptExcludes is an option to set excludes at the creation of a pdbg
+// OptSkips is an option to set excludes at the creation of a pdbg
 func OptSkips(skips []string) Option {
 	return func(apdbg *Pdbg) {
 		apdbg.SetSkips(skips)
