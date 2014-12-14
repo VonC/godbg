@@ -172,6 +172,16 @@ err2 cerr2
         gcalled2
 `)
 		})
+		Convey("Test pdbg skip with custom instance", func() {
+			apdbg := NewPdbg(SetBuffers, OptSkips([]string{"customNo"}))
+			customPdbgExcludeTest(apdbg)
+			So(ErrString(), ShouldEqual,
+				`  [globalPdbgExcludeTest:16] (func.019:167)
+    calling no
+      [globalCNo:26] (globalPdbgExcludeTest:17) (func.019:167)
+        gcalled2
+`)
+		})
 	})
 }
 
