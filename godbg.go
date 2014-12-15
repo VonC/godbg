@@ -88,7 +88,7 @@ func OptExcludes(excludes []string) Option {
 	}
 }
 
-// SetExcludes set skips on a pdbg (nil for global pdbg)
+// SetSkips set skips on a pdbg (nil for global pdbg)
 func (pdbg *Pdbg) SetSkips(skips []string) {
 	sk := []string{"/godbg.go'"}
 	sk = append(sk, skips...)
