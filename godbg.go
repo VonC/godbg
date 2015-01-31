@@ -286,3 +286,23 @@ func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
 	fmt.Fprint(pdbg.Err(), fmt.Sprint(msg))
 	return res
 }
+
+var r = regexp.MustCompile(`:\d+[\)\]]`)
+var r2 = regexp.MustCompile(`func\.\d+[\)\]]`)
+
+// ShouldEqualNL is a custom goconvey assertion to ignore differences
+// with func id and lines: `[globalPdbgExcludeTest:16] (func.019:167)` would
+// be equal to [globalPdbgExcludeTest] (func)
+// (see https://github.com/smartystreets/goconvey/wiki/Custom-Assertions)
+func ShouldEqualNL(actual interface{}, expected ...interface{}) string {
+	a := actual.(string)
+	e := expected[0].(string)
+	a = r.ReplaceAllStringFunc(a, func(s string) string { return s[len(s)-1:] })
+	e = r.ReplaceAllStringFunc(e, func(s string) string { return s[len(s)-1:] })
+	a = r2.ReplaceAllStringFunc(a, func(s string) string { return "func" + s[len(s)-1:] })
+	e = r2.ReplaceAllStringFunc(e, func(s string) string { return "func" + s[len(s)-1:] })
+	if a == e {
+		return ""
+	}
+	return fmt.Sprintf("Extected: '%s'\nActual:   '%s'\n(Should be equal even with different lines and function ids)", e, a)
+}

@@ -94,13 +94,13 @@ err2 cerr2
 		Convey("Test pdbg print with global instance", func() {
 			SetBuffers(nil)
 			Pdbgf("test")
-			So(ErrString(), ShouldEqual,
+			So(ErrString(), ShouldEqualNL,
 				`[func.012:96]
   test
 `)
 			ResetIOs()
 			prbgtest()
-			So(ErrString(), ShouldEqual,
+			So(ErrString(), ShouldEqualNL,
 				`  [prbgtest:4] (func.012:102)
     prbgtest content
 `)
@@ -109,19 +109,19 @@ err2 cerr2
 		Convey("Test pdbg print with custom instance", func() {
 			apdbg := NewPdbg(SetBuffers)
 			apdbg.Pdbgf("test2")
-			So(apdbg.ErrString(), ShouldEqual,
+			So(apdbg.ErrString(), ShouldEqualNL,
 				`[func.013:111]
   test2
 `)
 			apdbg.ResetIOs()
 			prbgtestCustom(apdbg)
-			So(apdbg.ErrString(), ShouldEqual,
+			So(apdbg.ErrString(), ShouldEqualNL,
 				`  [prbgtestCustom:8] (func.013:117)
     prbgtest content2
 `)
 			apdbg.ResetIOs()
 			apdbg.pdbgTestInstance()
-			So(apdbg.ErrString(), ShouldEqual,
+			So(apdbg.ErrString(), ShouldEqualNL,
 				`  [*Pdbg.pdbgTestInstance:12] (func.013:123)
     pdbgTestInstance content3
 `)
@@ -141,7 +141,7 @@ err2 cerr2
 			SetBuffers(nil)
 			pdbg.SetExcludes([]string{"globalNo"})
 			globalPdbgExcludeTest()
-			So(ErrString(), ShouldEqual,
+			So(ErrString(), ShouldEqualNL,
 				`  [globalPdbgExcludeTest:16] (func.016:143)
     calling no
       [globalCNo:26] (globalPdbgExcludeTest:17) (func.016:143)
@@ -151,7 +151,7 @@ err2 cerr2
 		Convey("Test pdbg exclude with custom instance", func() {
 			apdbg := NewPdbg(SetBuffers, OptExcludes([]string{"customNo"}))
 			customPdbgExcludeTest(apdbg)
-			So(apdbg.ErrString(), ShouldEqual,
+			So(apdbg.ErrString(), ShouldEqualNL,
 				`  [customPdbgExcludeTest:30] (func.017:153)
     calling cno
       [customCNo:40] (customPdbgExcludeTest:31) (func.017:153)
@@ -165,7 +165,7 @@ err2 cerr2
 			SetBuffers(nil)
 			pdbg.SetSkips([]string{"globalNo"})
 			globalPdbgExcludeTest()
-			So(ErrString(), ShouldEqual,
+			So(ErrString(), ShouldEqualNL,
 				`  [globalPdbgExcludeTest:16] (func.019:167)
     calling no
       [globalCNo:26] (globalPdbgExcludeTest:17) (func.019:167)
@@ -175,12 +175,28 @@ err2 cerr2
 		Convey("Test pdbg skip with custom instance", func() {
 			apdbg := NewPdbg(SetBuffers, OptSkips([]string{"customNo"}))
 			customPdbgExcludeTest(apdbg)
-			So(ErrString(), ShouldEqual,
+			So(ErrString(), ShouldEqualNL,
 				`  [globalPdbgExcludeTest:16] (func.019:167)
     calling no
       [globalCNo:26] (globalPdbgExcludeTest:17) (func.019:167)
         gcalled2
 `)
+		})
+	})
+
+	Convey("Test pdbg can ignore line number", t, func() {
+		Convey("Test pdbg skip with global instance", func() {
+			SetBuffers(nil)
+			pdbg.SetSkips([]string{"globalNo"})
+			globalPdbgExcludeTest()
+			s := ShouldEqualNL(ErrString(), `r`)
+			So(s, ShouldNotEqual, `e`)
+		})
+		Convey("Test pdbg skip with custom instance", func() {
+			apdbg := NewPdbg(SetBuffers, OptSkips([]string{"customNo"}))
+			customPdbgExcludeTest(apdbg)
+			s := ShouldEqualNL(ErrString(), `r`)
+			So(s, ShouldNotEqual, `e`)
 		})
 	})
 }
