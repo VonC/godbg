@@ -9,8 +9,8 @@ import (
 func TestMain(t *testing.T) {
 
 	Convey("Exit", t, func() {
-		exiter := DefaultExiter()
-		exiter = NewExiter(func(int) {})
+		exiter := Default()
+		exiter = New(func(int) {})
 		exiter.Exit(3)
 		So(exiter.Status(), ShouldEqual, 3)
 	})

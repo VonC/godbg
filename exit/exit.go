@@ -26,14 +26,14 @@ func (e *Exit) Status() int {
 	return e.status
 }
 
-// DefaultExiter returns an exiter with default os.Exit() call.
+// Default returns an Exit with default os.Exit() call.
 // That means the status will never be visible,
-// since os.Exit stops everything.
-func DefaultExiter() *Exit {
+// since os.Exit() stops everything.
+func Default() *Exit {
 	return &Exit{exit: os.Exit}
 }
 
 // NewExiter returns an exiter with a custom function
-func NewExiter(exit Func) *Exit {
+func New(exit Func) *Exit {
 	return &Exit{exit: exit}
 }
