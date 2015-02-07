@@ -1,17 +1,14 @@
 package exit
 
+// Inspired by
+// http://stackoverflow.com/questions/26225513/how-to-test-os-exit-scenarios-in-go
+
 import "os"
 
 // Func takes a code as exit status
 type Func func(int)
 
-// Exiter must have an Exit function able to get  an exit status
-type Exiter interface {
-	Exit(code int)
-	Status() int
-}
-
-// Exit has an exiter, and will memorize the exit status code
+// Exit has an exit func, and will memorize the exit status code
 type Exit struct {
 	exit   Func
 	status int
@@ -32,11 +29,11 @@ func (e *Exit) Status() int {
 // DefaultExiter returns an exiter with default os.Exit() call.
 // That means the status will never be visible,
 // since os.Exit stops everything.
-func DefaultExiter() Exiter {
+func DefaultExiter() *Exit {
 	return &Exit{exit: os.Exit}
 }
 
 // NewExiter returns an exiter with a custom function
-func NewExiter(exit Func) Exiter {
+func NewExiter(exit Func) *Exit {
 	return &Exit{exit: exit}
 }
