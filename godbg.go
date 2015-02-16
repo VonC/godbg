@@ -24,16 +24,7 @@ type Pdbg struct {
 	breaks   []string
 	excludes []string
 	skips    []string
-	std      *std
-}
-
-type std struct {
-	osstdout *os.File
-	osstderr *os.File
-	sow      *os.File
-	sor      *os.File
-	sew      *os.File
-	ser      *os.File
+	global   bool
 }
 
 // Out returns a writer for normal messages.
@@ -71,7 +62,7 @@ var pdbg *Pdbg
 
 func init() {
 	pdbg = NewPdbg()
-	pdbg.std = &std{osstdout: os.Stdout, osstderr: os.Stderr}
+	pdbg.global = true
 }
 
 // Option set an option for a Pdbg
@@ -90,24 +81,9 @@ func SetBuffers(apdbg *Pdbg) {
 	apdbg.sout = bufio.NewWriter(apdbg.bout)
 	apdbg.berr = bytes.NewBuffer(nil)
 	apdbg.serr = bufio.NewWriter(apdbg.berr)
-	if apdbg.std != nil {
-		r, w, err := os.Pipe()
-		if err != nil {
-			panic(err)
-		}
-		apdbg.std.sor = r
-		apdbg.std.sow = w
-		apdbg.sout = bufio.NewWriter(apdbg.std.sow)
-		r, w, err = os.Pipe()
-		if err != nil {
-			panic(err)
-		}
-		apdbg.std.ser = r
-		apdbg.std.sew = w
-		apdbg.serr = bufio.NewWriter(apdbg.std.sew)
-
-		os.Stdout = apdbg.std.sow
-		os.Stderr = apdbg.std.sew
+	if apdbg.global {
+		os.Stdout = Out()
+		os.Stderr = Err()
 	}
 }
 
