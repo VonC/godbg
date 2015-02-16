@@ -24,7 +24,6 @@ type Pdbg struct {
 	breaks   []string
 	excludes []string
 	skips    []string
-	global   bool
 }
 
 // Out returns a writer for normal messages.
@@ -58,12 +57,7 @@ func (pdbg *Pdbg) Err() io.Writer {
 }
 
 // global pdbg used for printing
-var pdbg *Pdbg
-
-func init() {
-	pdbg = NewPdbg()
-	pdbg.global = true
-}
+var pdbg = NewPdbg()
 
 // Option set an option for a Pdbg
 // http://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis
@@ -76,15 +70,10 @@ func SetBuffers(apdbg *Pdbg) {
 	if apdbg == nil {
 		apdbg = pdbg
 	}
-	// http://stackoverflow.com/questions/10473800/in-go-how-do-i-capture-stdout-of-a-function-into-a-string
 	apdbg.bout = bytes.NewBuffer(nil)
 	apdbg.sout = bufio.NewWriter(apdbg.bout)
 	apdbg.berr = bytes.NewBuffer(nil)
 	apdbg.serr = bufio.NewWriter(apdbg.berr)
-	if apdbg.global {
-		os.Stdout = Out()
-		os.Stderr = Err()
-	}
 }
 
 // SetExcludes set excludes on a pdbg (nil for global pdbg)
