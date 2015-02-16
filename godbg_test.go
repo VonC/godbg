@@ -15,10 +15,10 @@ func TestProject(t *testing.T) {
 			So(Out(), ShouldEqual, os.Stdout)
 			So(Err(), ShouldEqual, os.Stderr)
 		})
-		Convey("When set to buffer, should still equals to std", func() {
+		Convey("When set to buffer, no longer equals to std", func() {
 			SetBuffers(nil)
-			So(Out(), ShouldEqual, os.Stdout)
-			So(Err(), ShouldEqual, os.Stderr)
+			So(Out(), ShouldNotEqual, os.Stdout)
+			So(Err(), ShouldNotEqual, os.Stderr)
 		})
 		Convey("By Default, a new pdbg instance buffer equals to std", func() {
 			apdbg := NewPdbg()
@@ -43,15 +43,11 @@ func TestProject(t *testing.T) {
 			fmt.Fprintln(Out(), "test content")
 			fmt.Fprintln(Err(), "err1 cerr")
 			fmt.Fprintln(Err(), "err2 cerr2")
-			fmt.Fprintln(os.Stderr, "err3 cerr3")
 			fmt.Fprint(Out(), "test2 content2")
-			fmt.Print("test3 content3")
 			So(OutString(), ShouldEqual, `test content
-test2 content2
-test3 content3`)
+test2 content2`)
 			So(ErrString(), ShouldEqual, `err1 cerr
 err2 cerr2
-err3 cerr3
 `)
 		})
 
@@ -62,9 +58,9 @@ err3 cerr3
 			fmt.Fprint(Err(), "err1 cerr")
 			So(ErrString(), ShouldEqual, `err1 cerr`)
 			ResetIOs()
-			fmt.Print("test2 content2")
+			fmt.Fprint(Out(), "test2 content2")
 			So(OutString(), ShouldEqual, `test2 content2`)
-			fmt.Fprint(os.Stderr, "err2 cerr2")
+			fmt.Fprint(Err(), "err2 cerr2")
 			So(ErrString(), ShouldEqual, `err2 cerr2`)
 		})
 
