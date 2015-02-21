@@ -167,6 +167,17 @@ func (pdbg *Pdbg) ErrString() string {
 	return pdbg.berr.String()
 }
 
+// NoOutput checks if there is any output recorded on Stdout or Stderr
+func NoOutput() bool {
+	return OutString() == "" && ErrString() == ""
+}
+
+// NoOutput checks if there is any output recorded on Stdout or Stderr
+// for a given pdbg instance.
+func (pdbg *Pdbg) NoOutput() bool {
+	return pdbg.OutString() == "" && pdbg.ErrString() == ""
+}
+
 func (pdbg *Pdbg) pdbgExcluded(dbg string) bool {
 	for _, e := range pdbg.excludes {
 		if strings.Contains(dbg, e) {

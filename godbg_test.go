@@ -5,6 +5,7 @@ import (
 	"os"
 	"runtime"
 	"testing"
+
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -14,6 +15,7 @@ func TestProject(t *testing.T) {
 		Convey("By Default, equals to std", func() {
 			So(Out(), ShouldEqual, os.Stdout)
 			So(Err(), ShouldEqual, os.Stderr)
+			So(NoOutput(), ShouldBeTrue)
 		})
 		Convey("When set to buffer, no longer equals to std", func() {
 			SetBuffers(nil)
@@ -24,6 +26,7 @@ func TestProject(t *testing.T) {
 			apdbg := NewPdbg()
 			So(apdbg.Out(), ShouldEqual, os.Stdout)
 			So(apdbg.Err(), ShouldEqual, os.Stderr)
+			So(apdbg.NoOutput(), ShouldBeTrue)
 		})
 		Convey("By Default, a new pdbg instance set to buffer writes no longer equals to std", func() {
 			apdbg := NewPdbg(SetBuffers)
@@ -41,6 +44,7 @@ func TestProject(t *testing.T) {
 			So(ErrString(), ShouldEqual, ``)
 			SetBuffers(nil)
 			fmt.Fprintln(Out(), "test content")
+			So(NoOutput(), ShouldBeFalse)
 			fmt.Fprintln(Err(), "err1 cerr")
 			fmt.Fprintln(Err(), "err2 cerr2")
 			fmt.Fprint(Out(), "test2 content2")
@@ -67,6 +71,7 @@ err2 cerr2
 		Convey("Test custom buffer on custom pdbg", func() {
 			apdbg := NewPdbg(SetBuffers)
 			fmt.Fprintln(apdbg.Out(), "test content")
+			So(apdbg.NoOutput(), ShouldBeFalse)
 			fmt.Fprintln(apdbg.Err(), "err1 cerr")
 			fmt.Fprintln(apdbg.Err(), "err2 cerr2")
 			fmt.Fprint(apdbg.Out(), "test2 content2")
