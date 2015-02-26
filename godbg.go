@@ -312,6 +312,8 @@ func ShouldEqualNL(actual interface{}, expected ...interface{}) string {
 	e = r.ReplaceAllStringFunc(e, func(s string) string { return s[len(s)-1:] })
 	a = r2.ReplaceAllStringFunc(a, func(s string) string { return "func" + s[len(s)-1:] })
 	e = r2.ReplaceAllStringFunc(e, func(s string) string { return "func" + s[len(s)-1:] })
+	a = strings.TrimRight(a, "\r\n")
+	e = strings.TrimRight(e, "\r\n")
 	if a == e {
 		return ""
 	}

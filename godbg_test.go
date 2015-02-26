@@ -101,14 +101,12 @@ err2 cerr2
 			Pdbgf("test")
 			So(ErrString(), ShouldEqualNL,
 				`[func.012:96]
-  test
-`)
+  test`)
 			ResetIOs()
 			prbgtest()
 			So(ErrString(), ShouldEqualNL,
 				`  [prbgtest:4] (func.012:102)
-    prbgtest content
-`)
+    prbgtest content`)
 		})
 
 		Convey("Test pdbg print with custom instance", func() {
@@ -116,20 +114,17 @@ err2 cerr2
 			apdbg.Pdbgf("test2")
 			So(apdbg.ErrString(), ShouldEqualNL,
 				`[func.013:111]
-  test2
-`)
+  test2`)
 			apdbg.ResetIOs()
 			prbgtestCustom(apdbg)
 			So(apdbg.ErrString(), ShouldEqualNL,
 				`  [prbgtestCustom:8] (func.013:117)
-    prbgtest content2
-`)
+    prbgtest content2`)
 			apdbg.ResetIOs()
 			apdbg.pdbgTestInstance()
 			So(apdbg.ErrString(), ShouldEqualNL,
 				`  [*Pdbg.pdbgTestInstance:12] (func.013:123)
-    pdbgTestInstance content3
-`)
+    pdbgTestInstance content3`)
 		})
 		Convey("Test pdbg prints nothing if runtime.Caller fails", func() {
 			mycaller = failCaller
@@ -150,8 +145,7 @@ err2 cerr2
 				`  [globalPdbgExcludeTest:16] (func.016:143)
     calling no
       [globalCNo:26] (globalPdbgExcludeTest:17) (func.016:143)
-        gcalled2
-`)
+        gcalled2`)
 		})
 		Convey("Test pdbg exclude with custom instance", func() {
 			apdbg := NewPdbg(SetBuffers, OptExcludes([]string{"customNo"}))
@@ -160,8 +154,7 @@ err2 cerr2
 				`  [customPdbgExcludeTest:30] (func.017:153)
     calling cno
       [customCNo:40] (customPdbgExcludeTest:31) (func.017:153)
-        ccalled2
-`)
+        ccalled2`)
 		})
 	})
 
@@ -174,8 +167,7 @@ err2 cerr2
 				`  [globalPdbgExcludeTest:16] (func.019:167)
     calling no
       [globalCNo:26] (globalPdbgExcludeTest:17) (func.019:167)
-        gcalled2
-`)
+        gcalled2`)
 		})
 		Convey("Test pdbg skip with custom instance", func() {
 			apdbg := NewPdbg(SetBuffers, OptSkips([]string{"customNo"}))
@@ -184,8 +176,7 @@ err2 cerr2
 				`  [globalPdbgExcludeTest:16] (func.019:167)
     calling no
       [globalCNo:26] (globalPdbgExcludeTest:17) (func.019:167)
-        gcalled2
-`)
+        gcalled2`)
 		})
 	})
 
