@@ -221,8 +221,17 @@ type caller func(skip int) (pc uintptr, file string, line int, ok bool)
 
 var mycaller = runtime.Caller
 
+// Perrdbgf uses Stderr for printing strings, with indent and function name
+func Perrdbgf(format string, args ...interface{}) string {
+	return pdbg.pdbgfw(format, os.Stderr, args...)
+}
+
 // Pdbgf uses custom Pdbg variable for printing strings, with indent and function name
 func (pdbg *Pdbg) Pdbgf(format string, args ...interface{}) string {
+	return pdbg.pdbgfw(format, pdbg.Err(), args...)
+}
+
+func (pdbg *Pdbg) pdbgfw(format string, iow io.Writer, args ...interface{}) string {
 	msg := fmt.Sprintf(format+"\n", args...)
 	msg = strings.TrimSpace(msg)
 

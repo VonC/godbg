@@ -41,6 +41,7 @@ func TestProject(t *testing.T) {
 			fmt.Fprintln(Out(), "test0 content0")
 			So(OutString(), ShouldEqual, ``)
 			fmt.Fprintln(Err(), "err0 content0")
+			Perrdbgf("err0b content0b")
 			So(ErrString(), ShouldEqual, ``)
 			SetBuffers(nil)
 			fmt.Fprintln(Out(), "test content")
