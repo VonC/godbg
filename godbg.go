@@ -303,7 +303,7 @@ func (pdbg *Pdbg) pdbgfw(format string, iow io.Writer, args ...interface{}) stri
 	}
 	msg = pmsg + spaces + "  " + msg + "\n"
 	// fmt.Printf("==> MSG '%v'\n", msg) // DBG
-	fmt.Fprint(pdbg.Err(), fmt.Sprint(msg))
+	fmt.Fprint(iow, fmt.Sprint(msg))
 	return res
 }
 
