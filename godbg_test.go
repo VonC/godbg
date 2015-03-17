@@ -96,6 +96,34 @@ err2 cerr2
 		})
 	})
 
+	Convey("Test ShouldEqualNL", t, func() {
+		Convey("ShouldEqualNL of two empty strings is true", func() {
+			res := ShouldEqualNL("", "")
+			So(res, ShouldBeEmpty)
+		})
+		Convey("ShouldEqualNL of two identical strings is true", func() {
+			res := ShouldEqualNL("abc\ndef", "abc\ndef")
+			So(res, ShouldBeEmpty)
+		})
+		Convey("ShouldEqualNL mentions missing expected lines", func() {
+			res := ShouldEqualNL("a\nb\nc", "a\nb")
+			So(res, ShouldEndWith, `Expected has only 2 lines instead of actual 3 lines: 1 lines not expected`)
+		})
+		Convey("ShouldEqualNL mentions missing actual lines", func() {
+			res := ShouldEqualNL("d\ne", "d\ne\nf")
+			So(res, ShouldEndWith, `actual misses lines after line 2
+'f'`)
+		})
+		Convey("ShouldEqualNL detects the first line with difference", func() {
+			res := ShouldEqualNL("g\nh\ni", "g\nk\nj")
+			So(res, ShouldEndWith, `line '2' differs:
+E'k'
+A'h'
+E'"k"'
+A'"h"'`)
+		})
+	})
+
 	Convey("Test pdbg print functions", t, func() {
 		Convey("Test pdbg print with global instance", func() {
 			SetBuffers(nil)

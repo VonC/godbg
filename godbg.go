@@ -323,8 +323,32 @@ func ShouldEqualNL(actual interface{}, expected ...interface{}) string {
 	e = r2.ReplaceAllStringFunc(e, func(s string) string { return "func" + s[len(s)-1:] })
 	a = strings.TrimRight(a, "\r\n")
 	e = strings.TrimRight(e, "\r\n")
+	a = strings.Replace(a, "\r\n", "\n", -1)
 	if a == e {
 		return ""
 	}
-	return fmt.Sprintf("Extected: '%s'\nActual:   '%s'\n(Should be equal even with different lines and function ids)", e, a)
+	al := strings.Split(a, "\n")
+	el := strings.Split(e, "\n")
+	msg := ""
+	diff := false
+	ali := 0
+	aline := ""
+	for ali, aline = range al {
+		if len(el) <= ali {
+			msg = msg + fmt.Sprintf("Expected has only %d lines instead of actual %d lines: %d lines not expected", ali, len(al), len(al)-ali)
+			diff = true
+			break
+		}
+		eline := el[ali]
+		if aline == eline {
+			continue
+		}
+		msg = msg + fmt.Sprintf("line '%d' differs:\nE'%s'\nA'%s'\nE'%q'\nA'%q'", ali+1, eline, aline, eline, aline)
+		diff = true
+		break
+	}
+	if !diff && len(el) >= ali+1 {
+		msg = msg + fmt.Sprintf("actual misses lines after line %d\n'%s'", ali+1, el[ali+1])
+	}
+	return fmt.Sprintf("Expected: '%s'\nActual:   '%s'\n(Should be equal even with different lines and function ids)\n%s", e, a, msg)
 }
