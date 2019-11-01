@@ -15,9 +15,15 @@ type Exit struct {
 }
 
 // Exit calls the exiter, and then returns code as status.
+// If e was declared, but never set (since only a test would set e),
+// simply calls os.Exit()
 func (e *Exit) Exit(code int) {
-	e.status = code
-	e.exit(code)
+	if e != nil {
+		e.status = code
+		e.exit(code)
+	} else {
+		os.Exit(code)
+	}
 }
 
 // Status get the exit status code as memorized
